@@ -7,7 +7,20 @@
 		<key>FoodTracker2.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>14</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>71FB454B20E7250E00811DB5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>71FB455F20E7250F00811DB5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

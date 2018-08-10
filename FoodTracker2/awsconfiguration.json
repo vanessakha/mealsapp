@@ -1,0 +1,51 @@
+{
+  "UserAgent": "MobileHub/1.0",
+  "Version": "1.0",
+  "CredentialsProvider": {
+    "CognitoIdentity": {
+      "Default": {
+        "PoolId": "us-west-2:12a1701a-d229-46f0-87d3-e9b40b93c4df",
+        "Region": "us-west-2"
+      }
+    }
+  },
+  "IdentityManager": {
+    "Default": {}
+  },
+  "CognitoUserPool": {
+    "Default": {
+      "PoolId": "us-west-2_74y9g4oo3",
+      "AppClientId": "6nphj7a2f97t21goqrmrtjaueo",
+      "AppClientSecret": "fg6h919plqa0krka6ma132d49n8cc6dgeuod8t279ggo1lnbdq9",
+      "Region": "us-west-2"
+    }
+  },
+  "S3TransferUtility": {
+    "Default": {
+      "Bucket": "mealsapp-userfiles-mobilehub-1459387644",
+      "Region": "us-west-2"
+    }
+  },
+  "DynamoDBObjectMapper": {
+    "Default": {
+      "Region": "us-west-2"
+    }
+  },
+  "PinpointAnalytics": {
+    "Default": {
+      "AppId": "e4c7d4a9d6614698bba58e4514189dd6",
+      "Region": "us-east-1"
+    }
+  },
+  "PinpointTargeting": {
+    "Default": {
+      "Region": "us-east-1"
+    }
+  },
+  "UserFileManager": {
+    "Default": {
+      "Bucket": "mealsapp-userfiles-mobilehub-1459387644",
+      "Region": "us-west-2"
+    }
+  }
+}
