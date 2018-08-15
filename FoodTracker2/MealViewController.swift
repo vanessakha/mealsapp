@@ -115,7 +115,7 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
             if mealId == nil {
                 print("no meal id")
             }
-            if mealId != nil{ // update new meal one last time
+            else { // update new meal one last time
                 let meal_id = MealViewController.mealId
                 var meal_name = self.nameTextField.text!
                 if meal_name.isEmpty{

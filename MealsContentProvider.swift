@@ -112,6 +112,7 @@ public class MealsContentProvider{
         meal._ingredients = ingredients
         meal._recipe = recipe
         meal._creationDate = NSDate().timeIntervalSince1970 as NSNumber
+        meal._lowercaseName = mealName.lowercased()
         
         object_mapper.save(meal){ (error: Error?) -> Void in
             if let error = error {
@@ -131,9 +132,11 @@ public class MealsContentProvider{
         
         if (!mealName.isEmpty){
             meal._name = mealName
+            meal._lowercaseName = mealName.lowercased()
         }
         else{
             meal._name = ""
+            meal._lowercaseName = ""
         }
         meal._rating = rating as NSNumber
         if (!ingredients.isEmpty){
@@ -179,6 +182,7 @@ public class MealsContentProvider{
     // MARK: Database Query Functions
     
     func getMealsFromDDB(){
+        print("getting meals from db")
         let queryExpression = AWSDynamoDBQueryExpression()
         queryExpression.keyConditionExpression = "#userId = :userId"
         queryExpression.expressionAttributeNames = [
@@ -196,12 +200,10 @@ public class MealsContentProvider{
                 print("Found [\(output!.items.count)] meals")
                 for meal in output!.items {
                     let meal = meal as? Meals
-                    print("\nMealId: \(meal!._mealId!)\nTitle: \(meal!._name!)\nRating: \(meal!._rating!)\nIngredients: \(meal!._ingredients!)\nRecipe: \(meal!._recipe!)")
+                    print("\nMealId: \(meal!._mealId!)\nTitle: \(meal!._name!)\nRating: \(meal!._rating!)\nIngredients: \(meal!._ingredients!)\nRecipe: \(meal!._recipe!)\nLowercased name: \(meal!._lowercaseName!)")
                 }
             }
-            
         }
     }
-
-
+    
 }

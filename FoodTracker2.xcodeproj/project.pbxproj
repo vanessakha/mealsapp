@@ -9,8 +9,12 @@
 /* Begin PBXBuildFile section */
 		03557AE9DFCA833CD5EF3A5E /* Pods_FoodTracker2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C2285C4478816D24895C37E /* Pods_FoodTracker2.framework */; };
 		60C5569A156C82BB70678FCE /* Pods_FoodTracker2Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65C8423A5AF9DB52F079D0C3 /* Pods_FoodTracker2Tests.framework */; };
-		717B0F4921084DEE002D57A5 /* Meals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717B0F4721084DEE002D57A5 /* Meals.swift */; };
-		717B0F4A21084DEE002D57A5 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 717B0F4821084DEE002D57A5 /* LICENSE.txt */; };
+		717216BF2122F81200ABC7BD /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717216BE2122F81200ABC7BD /* SearchViewController.swift */; };
+		717216C1212396D200ABC7BD /* MealsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717216C0212396D200ABC7BD /* MealsClass.swift */; };
+		717216C32123BA2500ABC7BD /* SearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717216C22123BA2500ABC7BD /* SearchResultsViewController.swift */; };
+		717216D72123BE9300ABC7BD /* SearchViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717216D62123BE9300ABC7BD /* SearchViewCell.swift */; };
+		717216DE2123CADD00ABC7BD /* Meals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717216DC2123CADD00ABC7BD /* Meals.swift */; };
+		717216DF2123CADD00ABC7BD /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 717216DD2123CADD00ABC7BD /* LICENSE.txt */; };
 		717B0F4C21084E62002D57A5 /* awsconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = 717B0F4B21084E62002D57A5 /* awsconfiguration.json */; };
 		718CC07D2116B7E80007B744 /* Meal.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 718CC07B2116B7E80007B744 /* Meal.xcdatamodeld */; };
 		71AE0ADF2106B0BC003B8161 /* MealsContentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71AE0ADE2106B0BC003B8161 /* MealsContentProvider.swift */; };
@@ -40,8 +44,12 @@
 		1C2285C4478816D24895C37E /* Pods_FoodTracker2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FoodTracker2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AD79F9D3B406974FFFEA8B2 /* Pods-FoodTracker2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FoodTracker2.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FoodTracker2/Pods-FoodTracker2.debug.xcconfig"; sourceTree = "<group>"; };
 		65C8423A5AF9DB52F079D0C3 /* Pods_FoodTracker2Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FoodTracker2Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		717B0F4721084DEE002D57A5 /* Meals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Meals.swift; sourceTree = "<group>"; };
-		717B0F4821084DEE002D57A5 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		717216BE2122F81200ABC7BD /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		717216C0212396D200ABC7BD /* MealsClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealsClass.swift; sourceTree = "<group>"; };
+		717216C22123BA2500ABC7BD /* SearchResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsViewController.swift; sourceTree = "<group>"; };
+		717216D62123BE9300ABC7BD /* SearchViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewCell.swift; sourceTree = "<group>"; };
+		717216DC2123CADD00ABC7BD /* Meals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Meals.swift; sourceTree = "<group>"; };
+		717216DD2123CADD00ABC7BD /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		717B0F4B21084E62002D57A5 /* awsconfiguration.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = awsconfiguration.json; sourceTree = "<group>"; };
 		718CC07C2116B7E80007B744 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		71AE0ADE2106B0BC003B8161 /* MealsContentProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealsContentProvider.swift; sourceTree = "<group>"; };
@@ -91,36 +99,35 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		717B0F4321084DEE002D57A5 /* meals-app-integration-lib-aws-my-sample-app-ios-swift */ = {
+		717216D82123CADD00ABC7BD /* meals-app-integration-lib-aws-my-sample-app-ios-swift */ = {
 			isa = PBXGroup;
 			children = (
-				717B0F4421084DEE002D57A5 /* AmazonAws */,
-				717B0F4821084DEE002D57A5 /* LICENSE.txt */,
+				717216D92123CADD00ABC7BD /* AmazonAws */,
+				717216DD2123CADD00ABC7BD /* LICENSE.txt */,
 			);
-			name = "meals-app-integration-lib-aws-my-sample-app-ios-swift";
-			path = "../../../Downloads/meals-app-integration-lib-aws-my-sample-app-ios-swift";
+			path = "meals-app-integration-lib-aws-my-sample-app-ios-swift";
 			sourceTree = "<group>";
 		};
-		717B0F4421084DEE002D57A5 /* AmazonAws */ = {
+		717216D92123CADD00ABC7BD /* AmazonAws */ = {
 			isa = PBXGroup;
 			children = (
-				717B0F4521084DEE002D57A5 /* Models */,
+				717216DA2123CADD00ABC7BD /* Models */,
 			);
 			path = AmazonAws;
 			sourceTree = "<group>";
 		};
-		717B0F4521084DEE002D57A5 /* Models */ = {
+		717216DA2123CADD00ABC7BD /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				717B0F4621084DEE002D57A5 /* NoSQL */,
+				717216DB2123CADD00ABC7BD /* NoSQL */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		717B0F4621084DEE002D57A5 /* NoSQL */ = {
+		717216DB2123CADD00ABC7BD /* NoSQL */ = {
 			isa = PBXGroup;
 			children = (
-				717B0F4721084DEE002D57A5 /* Meals.swift */,
+				717216DC2123CADD00ABC7BD /* Meals.swift */,
 			);
 			path = NoSQL;
 			sourceTree = "<group>";
@@ -128,6 +135,10 @@
 		71FB454320E7250E00811DB5 = {
 			isa = PBXGroup;
 			children = (
+				71AE0ADE2106B0BC003B8161 /* MealsContentProvider.swift */,
+				717216C0212396D200ABC7BD /* MealsClass.swift */,
+				718CC07B2116B7E80007B744 /* Meal.xcdatamodeld */,
+				717216D82123CADD00ABC7BD /* meals-app-integration-lib-aws-my-sample-app-ios-swift */,
 				71FB454E20E7250E00811DB5 /* FoodTracker2 */,
 				71FB456320E7250F00811DB5 /* FoodTracker2Tests */,
 				71FB454D20E7250E00811DB5 /* Products */,
@@ -148,19 +159,19 @@
 		71FB454E20E7250E00811DB5 /* FoodTracker2 */ = {
 			isa = PBXGroup;
 			children = (
-				71AE0ADE2106B0BC003B8161 /* MealsContentProvider.swift */,
-				717B0F4321084DEE002D57A5 /* meals-app-integration-lib-aws-my-sample-app-ios-swift */,
-				71FB455120E7250E00811DB5 /* MealViewController.swift */,
 				71FB457620EAF98900811DB5 /* MealTableViewController.swift */,
+				71FB455120E7250E00811DB5 /* MealViewController.swift */,
+				717216C22123BA2500ABC7BD /* SearchResultsViewController.swift */,
+				717216BE2122F81200ABC7BD /* SearchViewController.swift */,
+				717216D62123BE9300ABC7BD /* SearchViewCell.swift */,
 				71FB457420EAC4C400811DB5 /* MealTableViewCell.swift */,
 				71FB454F20E7250E00811DB5 /* AppDelegate.swift */,
 				71FB456F20E7611F00811DB5 /* RatingControl.swift */,
+				717B0F4B21084E62002D57A5 /* awsconfiguration.json */,
 				71FB455320E7250E00811DB5 /* Main.storyboard */,
 				71FB455620E7250F00811DB5 /* Assets.xcassets */,
 				71FB455820E7250F00811DB5 /* LaunchScreen.storyboard */,
-				717B0F4B21084E62002D57A5 /* awsconfiguration.json */,
 				71FB455B20E7250F00811DB5 /* Info.plist */,
-				718CC07B2116B7E80007B744 /* Meal.xcdatamodeld */,
 			);
 			path = FoodTracker2;
 			sourceTree = "<group>";
@@ -271,8 +282,8 @@
 			files = (
 				71FB455A20E7250F00811DB5 /* LaunchScreen.storyboard in Resources */,
 				71FB455720E7250F00811DB5 /* Assets.xcassets in Resources */,
-				717B0F4A21084DEE002D57A5 /* LICENSE.txt in Resources */,
 				717B0F4C21084E62002D57A5 /* awsconfiguration.json in Resources */,
+				717216DF2123CADD00ABC7BD /* LICENSE.txt in Resources */,
 				71FB455520E7250E00811DB5 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,12 +377,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				717216DE2123CADD00ABC7BD /* Meals.swift in Sources */,
 				71FB455220E7250E00811DB5 /* MealViewController.swift in Sources */,
-				717B0F4921084DEE002D57A5 /* Meals.swift in Sources */,
+				717216D72123BE9300ABC7BD /* SearchViewCell.swift in Sources */,
 				71AE0ADF2106B0BC003B8161 /* MealsContentProvider.swift in Sources */,
 				71FB457120E7613400811DB5 /* RatingControl.swift in Sources */,
+				717216C32123BA2500ABC7BD /* SearchResultsViewController.swift in Sources */,
+				717216BF2122F81200ABC7BD /* SearchViewController.swift in Sources */,
 				71FB455020E7250E00811DB5 /* AppDelegate.swift in Sources */,
 				718CC07D2116B7E80007B744 /* Meal.xcdatamodeld in Sources */,
+				717216C1212396D200ABC7BD /* MealsClass.swift in Sources */,
 				71FB457720EAF98900811DB5 /* MealTableViewController.swift in Sources */,
 				71FB457520EAC4C400811DB5 /* MealTableViewCell.swift in Sources */,
 			);
@@ -535,6 +550,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = FoodTracker2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -553,6 +569,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = FoodTracker2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

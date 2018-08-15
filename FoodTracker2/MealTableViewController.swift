@@ -77,6 +77,7 @@ class MealTableViewController: UITableViewController, NSFetchedResultsController
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?){
         if segue.identifier == "showDetail" {
+            print("Performing segue")
             if let indexPath = tableView.indexPathForSelectedRow {
                 let object = fetchedResultsController.object(at: indexPath)
                 let controller = (segue.destination as! UINavigationController).topViewController as! MealViewController
@@ -86,7 +87,6 @@ class MealTableViewController: UITableViewController, NSFetchedResultsController
 //                controller.navigationItem.leftBarButtonItem!.target = controller
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
-            
         }
     }
     
