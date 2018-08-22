@@ -29,12 +29,16 @@ class SearchResultsViewController: UIViewController {
         ingredientsLabel.text = searchedMeal!.mealIngredients
         recipeLabel.text = searchedMeal!.mealRecipe
     }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-
+    @IBAction func backButtonTapped(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     /*
     // MARK: - Navigation
 

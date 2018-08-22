@@ -19,6 +19,7 @@ target 'FoodTracker2' do
   pod 'AWSUserPoolsSignIn', '~> 2.6.5'
   pod 'AWSAuthUI', '~> 2.6.5'
   pod 'AWSMobileClient', '~> 2.6.5'
+  pod 'AWSCognitoIdentityProvider', '~> 2.6.5'
   
   # Table Pod(s)
   pod 'AWSDynamoDB', '~> 2.6.5'

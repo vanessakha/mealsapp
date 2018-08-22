@@ -23,6 +23,7 @@ PODS:
 
 DEPENDENCIES:
   - AWSAuthUI (~> 2.6.5)
+  - AWSCognitoIdentityProvider (~> 2.6.5)
   - AWSDynamoDB (~> 2.6.5)
   - AWSMobileClient (~> 2.6.5)
   - AWSPinpoint (~> 2.6.5)
@@ -54,6 +55,6 @@ SPEC CHECKSUMS:
   AWSS3: 4d857a223704bd956e91a659aec17ba1896ee0a9
   AWSUserPoolsSignIn: dfc849bcd5f965248ec8bb11c37e640bede7e377
 
-PODFILE CHECKSUM: 261c38458702c5d16d46bc14a693ab547a0df5a1
+PODFILE CHECKSUM: b00602e8fdbc16f7ae77ab7f21ba6f4196d658b1
 
 COCOAPODS: 1.5.3

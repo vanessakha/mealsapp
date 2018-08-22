@@ -12,6 +12,7 @@ import Foundation
 import CoreData
 import CoreGraphics
 import AWSS3
+import AWSMobileClient
 
 class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate {
     // MARK: Properties
@@ -29,10 +30,12 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
     static var mealId: String?
     var meals: [NSManagedObject] = []
     var filePath: String = ""
+    var s3Key: String = ""
     var is_presenting_picker = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         view.isUserInteractionEnabled = true
         
         autoSaveTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(autoSave), userInfo: nil, repeats: true)
@@ -47,6 +50,7 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
             MealViewController.mealId = myMeal?.value(forKey: "mealId") as? String
             configureView()
             self.filePath = myMeal?.value(forKey: "filePath") as! String
+            self.filePath = myMeal?.value(forKey: "s3Key") as! String
         }
     }
     
@@ -76,7 +80,7 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
     @objc func autoSave(){
         if (MealViewController.mealId == nil){
             // new meal
-            let id = mealsContentProvider?.insert(mealName: "new meal", rating: 0, ingredients: "ingredients", recipe: "recipe", filePath: "")
+            let id = mealsContentProvider?.insert(mealName: "new meal", rating: 0, ingredients: "ingredients", recipe: "recipe", filePath: "", s3Key: "")
             mealsContentProvider?.insertMealDDB(mealId: id!, mealName: "new meal", rating: 0, ingredients: ingredientsTextView.text!, recipe: recipeTextView.text!)
             MealViewController.mealId = id
         }
@@ -91,10 +95,11 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
             let meal_ingredients = self.ingredientsTextView.text
             let meal_recipe = self.recipeTextView.text
             let meal_photo_path = self.filePath
-            mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path)
+            mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: self.s3Key)
             mealsContentProvider?.updateMealDDB(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!)
         }
     }
+    
     override func viewDidAppear(_ animated: Bool){
         super.viewDidAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(MealViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
@@ -125,7 +130,7 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
                 let meal_ingredients = self.ingredientsTextView.text
                 let meal_recipe = self.recipeTextView.text
                 let meal_photo_path = self.filePath
-                mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path)
+                mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: s3Key)
                 mealsContentProvider?.updateMealDDB(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!) // ?
             }
         }
@@ -190,17 +195,19 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
         let documentPath = MealTableViewController.absDocURL!.path
         let selectedImageTag = NSUUID().uuidString
         let relFilePath = "\(String(selectedImageTag)).png"
-        let absFilePath = MealTableViewController.absDocURL!.appendingPathComponent(relFilePath)
+        let absFileURL = MealTableViewController.absDocURL!.appendingPathComponent(relFilePath)
+        let absFilePath = MealTableViewController.absDocURL!.appendingPathComponent(relFilePath).path
         guard let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage else{
             fatalError("Expected a dictionary containing an image, but was provided the following: \(info)")
         }
+        
         do{ // change?
             let files = try fileManager.contentsOfDirectory(atPath: "\(documentPath)")
             print("Accessed files")
             for file in files {
-                if "\(documentPath)/\(file)" == absFilePath.path {
+                if "\(documentPath)/\(file)" == absFilePath {
                     print("Removed file if it already exists.")
-                    try fileManager.removeItem(atPath: absFilePath.path)
+                    try fileManager.removeItem(atPath: absFilePath)
                 }
             }
         }
@@ -210,19 +217,55 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
         
         do{
             if let pngImageData = UIImagePNGRepresentation(selectedImage) {
-                try pngImageData.write(to: absFilePath, options: .atomic)
+                try pngImageData.write(to: absFileURL, options: .atomic)
                 print("Wrote image to file path")
             }
         }
         catch{
             print("Couldn't write image")
         }
+
+        let uploadRequest = AWSS3TransferManagerUploadRequest()
+        print("Created request")
+        uploadRequest!.bucket = "mealsapp-userfiles-mobilehub-1459387644/public"
+        print("Set bucket")
+        let S3key = NSUUID().uuidString
+        uploadRequest!.key = S3key
+        print("Set key")
+        uploadRequest!.body = absFileURL
+        
+        myMeal?.s3Key = S3key
+        
+        let transferManager = AWSS3TransferManager.default()
+        print("Made transfer manager")
+        
+        transferManager.upload(uploadRequest!).continueWith(executor: AWSExecutor.mainThread(), block: {(task: AWSTask<AnyObject>)-> Any? in
+            if let error = task.error as NSError? {
+                if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
+                    switch code{
+                    case .cancelled, .paused:
+                        break
+                    default:
+                        print("Error uploading: \(String(describing: uploadRequest!.key))\nError: \(error)")
+                    }
+                }
+                else{
+                    print("Error uploading: \(String(describing: uploadRequest!.key))\nError: \(error)")
+                }
+                return nil
+            }
+//            let uploadOutput = task.result
+            print("Upload complete for: \(uploadRequest!.key)")
+            return nil
+        })
+        
         self.filePath = relFilePath
         photoImageView.image = selectedImage
         print("Dismissing image picker")
         is_presenting_picker = false
         picker.dismiss(animated: true, completion: nil)
     }
+    
     
     //MARK: Actions
     
@@ -234,6 +277,10 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
         print("mealId before picker: \(String(describing: MealViewController.mealId))")
         is_presenting_picker = true
         present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    func createManager() -> AWSS3TransferManager{
+        return AWSS3TransferManager.default()
     }
     
     

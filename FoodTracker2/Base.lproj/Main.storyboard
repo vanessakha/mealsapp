@@ -58,6 +58,12 @@
                                                 </stackView>
                                             </subviews>
                                         </stackView>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Scz-jZ-evg">
+                                            <rect key="frame" x="0.0" y="0.0" width="97" height="97"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" secondItem="Scz-jZ-evg" secondAttribute="height" multiplier="1:1" id="uEt-Wt-cVI"/>
+                                            </constraints>
+                                        </imageView>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="wth-sb-LCS" firstAttribute="top" secondItem="IXX-tq-0Ia" secondAttribute="topMargin" constant="5" id="Io0-bn-s8E"/>
@@ -212,7 +218,13 @@
                             <constraint firstAttribute="trailing" secondItem="5Dx-Fg-NEZ" secondAttribute="trailing" id="m9g-eO-cw9"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="2VW-VM-tHt"/>
+                    <navigationItem key="navigationItem" id="2VW-VM-tHt">
+                        <barButtonItem key="leftBarButtonItem" title="Back" id="Oc1-13-I1d">
+                            <connections>
+                                <action selector="backButtonTapped:" destination="dEb-oh-226" id="4cc-1c-jDJ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <connections>
                         <outlet property="ingredientsLabel" destination="gYa-UI-P6s" id="4Jz-1p-45D"/>
@@ -245,12 +257,6 @@
         <!--Your Meals-->
         <scene sceneID="2Wb-Jj-aU0">
             <objects>
-                <view contentMode="scaleToFill" id="GYb-Ef-PtA">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="487"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                </view>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="zxk-j7-Vch" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController storyboardIdentifier="MealTableViewController" id="vEr-md-ayf" customClass="MealTableViewController" customModule="FoodTracker2" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="90" sectionHeaderHeight="28" sectionFooterHeight="28" id="8KA-8M-CO1">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -272,13 +278,13 @@
                                             <rect key="frame" x="99" y="16" width="252" height="58"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9yI-77-vG7">
-                                                    <rect key="frame" x="0.0" y="0.0" width="252" height="20.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="252" height="14"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <stackView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="ruI-9I-Iuk" customClass="RatingControl" customModule="FoodTracker2" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="20.5" width="252" height="37.5"/>
+                                                    <rect key="frame" x="0.0" y="14" width="252" height="44"/>
                                                 </stackView>
                                             </subviews>
                                             <constraints>
@@ -319,6 +325,12 @@
                         <segue destination="8qC-Ca-beV" kind="showDetail" identifier="showDetail" id="4wa-HJ-PlK"/>
                     </connections>
                 </tableViewController>
+                <view contentMode="scaleToFill" id="GYb-Ef-PtA">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="487"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </view>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zxk-j7-Vch" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-127.2" y="238.83058470764618"/>
         </scene>

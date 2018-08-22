@@ -18,7 +18,7 @@ class SearchViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.tableView.backgroundColor = UIColor.green
+        self.tableView.backgroundColor = UIColorFromRGB(rgbValue: 0xFFB3B3)
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
@@ -36,6 +36,9 @@ class SearchViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool){
         super.viewWillAppear(animated)
+        if #available(iOS 11.0, *){
+            navigationItem.hidesSearchBarWhenScrolling = false
+        }
     }
     
     /*
@@ -48,6 +51,11 @@ class SearchViewController: UITableViewController {
     }
     */
     
+    override func viewDidAppear(_ animated: Bool) {
+        if #available(iOS 11.0, *){
+            self.navigationItem.hidesSearchBarWhenScrolling = true
+        }
+    }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return SearchViewController.searchedMeals.count
     }
@@ -64,6 +72,7 @@ class SearchViewController: UITableViewController {
         let meal = SearchViewController.searchedMeals[indexPath.row]
         cell.nameLabel.text = meal.mealName
         cell.ratingControl.rating = meal.rating
+        
         
         return cell
         
@@ -125,6 +134,14 @@ class SearchViewController: UITableViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
+    func UIColorFromRGB(rgbValue: UInt)->UIColor{
+        return UIColor(
+            red: CGFloat((rgbValue & 0xFF0000) >> 16)/255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8)/255.0,
+            blue: CGFloat(rgbValue & 0x0000FF)/255.0,
+            alpha: CGFloat(1.0)
+        )
+    }
 }
 
 extension SearchViewController: UISearchResultsUpdating{

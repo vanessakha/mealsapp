@@ -25,7 +25,7 @@ public class MealsContentProvider{
     // MARK: NSManagedObjectContext Methods
     
     // creating new meals in NSManagedObjectContext
-    func insert(mealName: String, rating: Int, ingredients: String, recipe: String, filePath: String) ->  String{
+    func insert(mealName: String, rating: Int, ingredients: String, recipe: String, filePath: String, s3Key: String) ->  String{
         let context = get_context()
         
         let entity = NSEntityDescription.entity(forEntityName: "Meal", in: context)!
@@ -44,6 +44,7 @@ public class MealsContentProvider{
         meal.setValue(ingredients, forKeyPath: "ingredients")
         meal.setValue(recipe, forKeyPath: "recipe")
         meal.setValue(filePath, forKeyPath: "filePath")
+        meal.setValue(s3Key, forKeyPath: "s3Key")
         print("Set filepath to \(filePath)")
         
         do{
@@ -58,7 +59,7 @@ public class MealsContentProvider{
     }
     
     // updating = creating new object
-    func update(mealId: String, mealName: String, rating: Int, ingredients: String, recipe: String, filePath: String){
+    func update(mealId: String, mealName: String, rating: Int, ingredients: String, recipe: String, filePath: String, s3Key: String){
         let context = get_context()
         let entity = NSEntityDescription.entity(forEntityName: "Meal", in: context)!
         
@@ -72,8 +73,8 @@ public class MealsContentProvider{
         meal.setValue(ingredients, forKeyPath: "ingredients")
         meal.setValue(recipe, forKeyPath: "recipe")
         meal.setValue(filePath, forKeyPath: "filePath")
+        meal.setValue(s3Key, forKeyPath: "s3Key")
         print("Updated filepath to \(filePath)")
-
         
         do{
             try context.save()
