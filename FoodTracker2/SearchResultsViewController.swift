@@ -28,6 +28,10 @@ class SearchResultsViewController: UIViewController {
         ratingView.rating = searchedMeal!.rating
         ingredientsLabel.text = searchedMeal!.mealIngredients
         recipeLabel.text = searchedMeal!.mealRecipe
+        if searchedMeal!.s3Key != "empty"{
+            let url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(searchedMeal!.s3Key)
+            photoImageView.image = UIImage(contentsOfFile: url.path)
+        }
     }
     
     override func didReceiveMemoryWarning() {

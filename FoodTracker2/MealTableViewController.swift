@@ -20,6 +20,7 @@ import AWSAuthCore
 import AWSAuthUI
 import AWSS3
 import AWSCognitoIdentityProvider
+import AWSMobileClient
 
 class MealTableViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     //MARK: Properties
@@ -35,6 +36,7 @@ class MealTableViewController: UITableViewController, NSFetchedResultsController
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print("table view did load")
         self.tableView.delegate = self
         self.tableView.backgroundColor = UIColor.orange
         let fileManager = FileManager.default
@@ -47,19 +49,22 @@ class MealTableViewController: UITableViewController, NSFetchedResultsController
                     print("Error occurred: \(String(describing: error))")
                 }
                 else{
-                    // Sign-in successful
+                    print("About to query.")
+                    self._mealsContentProvider?.getMealsFromDDB()
                 }
             }
         }
-    
+        print("checked for sign-in")
+        
 //        let credentialsProvider = AWSCognitoCredentialsProvider(regionType: .USWest2, identityPoolId: "us-west-2:12a1701a-d229-46f0-87d3-e9b40b93c4df")
 //        let serviceConfiguration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialsProvider)
-        let serviceConfiguration = AWSServiceConfiguration(region: .USWest1, credentialsProvider: nil)
-        let userPoolConfiguration = AWSCognitoIdentityUserPoolConfiguration(clientId: "6nphj7a2f97t21goqrmrtjaueo", clientSecret: "fg6h919plqa0krka6ma132d49n8cc6dgeuod8t279ggo1lnbdq9", poolId: "us-west-2_74y9g4oo3")
-        AWSCognitoIdentityUserPool.register(with: serviceConfiguration, userPoolConfiguration: userPoolConfiguration, forKey: "UserPool")
-        let pool = AWSCognitoIdentityUserPool(forKey: "UserPool")
-        let credentialsProvider = AWSCognitoCredentialsProvider(regionType: .USWest2, identityPoolId: "us-west-2:12a1701a-d229-46f0-87d3-e9b40b93c4df", identityProviderManager: pool)
-        AWSServiceManager.default().defaultServiceConfiguration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialsProvider)
+        
+//        let serviceConfiguration = AWSServiceConfiguration(region: .USWest1, credentialsProvider: nil)
+//        let userPoolConfiguration = AWSCognitoIdentityUserPoolConfiguration(clientId: "6nphj7a2f97t21goqrmrtjaueo", clientSecret: "fg6h919plqa0krka6ma132d49n8cc6dgeuod8t279ggo1lnbdq9", poolId: "us-west-2_74y9g4oo3")
+//        AWSCognitoIdentityUserPool.register(with: serviceConfiguration, userPoolConfiguration: userPoolConfiguration, forKey: "UserPool")
+//        let pool = AWSCognitoIdentityUserPool(forKey: "UserPool")
+//        let credentialsProvider = AWSCognitoCredentialsProvider(regionType: .USWest2, identityPoolId: "us-west-2:12a1701a-d229-46f0-87d3-e9b40b93c4df", identityProviderManager: pool)
+//        AWSServiceManager.default().defaultServiceConfiguration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialsProvider)
         
         context?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         
@@ -74,12 +79,11 @@ class MealTableViewController: UITableViewController, NSFetchedResultsController
             let controllers = split.viewControllers
             _detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? MealViewController
         }
-        
-        print("About to query.")
-        _mealsContentProvider?.getMealsFromDDB()
+
     }
     
     override func viewWillAppear(_ animated: Bool){
+        print("table view about to appear")
         clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed // change
         super.viewWillAppear(animated)
     }

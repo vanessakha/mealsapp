@@ -102,7 +102,7 @@ public class MealsContentProvider{
     // MARK: Database Mutation Functions
     
     // inserting into database
-    func insertMealDDB(mealId: String, mealName: String, rating: Int, ingredients: String, recipe: String)->String{
+    func insertMealDDB(mealId: String, mealName: String, rating: Int, ingredients: String, recipe: String, s3Key: String)->String{
         let object_mapper = AWSDynamoDBObjectMapper.default()
         let meal: Meals = Meals()
         
@@ -112,6 +112,7 @@ public class MealsContentProvider{
         meal._rating = rating as NSNumber
         meal._ingredients = ingredients
         meal._recipe = recipe
+        meal._s3Key = s3Key
         meal._creationDate = NSDate().timeIntervalSince1970 as NSNumber
         meal._lowercaseName = mealName.lowercased()
         
@@ -125,33 +126,43 @@ public class MealsContentProvider{
         return meal._mealId!
     }
     
-    func updateMealDDB(mealId: String, mealName: String, rating: Int, ingredients: String, recipe: String){
+    func updateMealDDB(mealId: String, mealName: String, rating: Int, ingredients: String, recipe: String, s3Key: String){
+        
         let object_mapper = AWSDynamoDBObjectMapper.default()
+        
         let meal: Meals = Meals()
         meal._userId = AWSIdentityManager.default().identityId
         meal._mealId = mealId
         
-        if (!mealName.isEmpty){
-            meal._name = mealName
-            meal._lowercaseName = mealName.lowercased()
-        }
-        else{
-            meal._name = ""
-            meal._lowercaseName = ""
-        }
+        meal._name = mealName
         meal._rating = rating as NSNumber
-        if (!ingredients.isEmpty){
-            meal._ingredients = ingredients
-        }
-        else{
-            meal._ingredients = ""
-        }
-        if (!recipe.isEmpty){
-            meal._recipe = recipe
-        }
-        else{
-            meal._recipe = ""
-        }
+        meal._lowercaseName = mealName.lowercased()
+        meal._ingredients = ingredients
+        meal._recipe = recipe
+        meal._s3Key = s3Key
+        
+//        if (!mealName.isEmpty){
+//            meal._name = mealName
+//            meal._lowercaseName = mealName.lowercased()
+//        }
+//        else{
+//            meal._name = ""
+//            meal._lowercaseName = ""
+//        }
+//        meal._rating = rating as NSNumber
+//        if (!ingredients.isEmpty){
+//            meal._ingredients = ingredients
+//        }
+//        else{
+//            meal._ingredients = ""
+//        }
+//        if (!recipe.isEmpty){
+//            meal._recipe = recipe
+//        }
+//        else{
+//            meal._recipe = ""
+//        }
+        
         
         meal._updateDate = NSDate().timeIntervalSince1970 as NSNumber
         
@@ -193,7 +204,9 @@ public class MealsContentProvider{
             ":userId": AWSIdentityManager.default().identityId
         ]
         let object_mapper = AWSDynamoDBObjectMapper.default()
+        print("about to perform actual query")
         object_mapper.query(Meals.self, expression: queryExpression){ (output: AWSDynamoDBPaginatedOutput?, error: Error?) in // ? how do I access query items?
+            print("querying")
             if error != nil {
                 print("DynamoDB query request failed. Error: \(String(describing: error))")
             }
@@ -203,6 +216,7 @@ public class MealsContentProvider{
                     let meal = meal as? Meals
                     print("\nMealId: \(meal!._mealId!)\nTitle: \(meal!._name!)\nRating: \(meal!._rating!)\nIngredients: \(meal!._ingredients!)\nRecipe: \(meal!._recipe!)\nLowercased name: \(meal!._lowercaseName!)")
                 }
+                print("got meals from DDB")
             }
         }
     }

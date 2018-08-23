@@ -30,7 +30,7 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
     static var mealId: String?
     var meals: [NSManagedObject] = []
     var filePath: String = ""
-    var s3Key: String = ""
+    var s3Key: String = "empty"
     var is_presenting_picker = false
     
     override func viewDidLoad() {
@@ -50,7 +50,7 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
             MealViewController.mealId = myMeal?.value(forKey: "mealId") as? String
             configureView()
             self.filePath = myMeal?.value(forKey: "filePath") as! String
-            self.filePath = myMeal?.value(forKey: "s3Key") as! String
+            self.s3Key = myMeal?.value(forKey: "s3Key") as! String
         }
     }
     
@@ -80,8 +80,8 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
     @objc func autoSave(){
         if (MealViewController.mealId == nil){
             // new meal
-            let id = mealsContentProvider?.insert(mealName: "new meal", rating: 0, ingredients: "ingredients", recipe: "recipe", filePath: "", s3Key: "")
-            mealsContentProvider?.insertMealDDB(mealId: id!, mealName: "new meal", rating: 0, ingredients: ingredientsTextView.text!, recipe: recipeTextView.text!)
+            let id = mealsContentProvider?.insert(mealName: "new meal", rating: 0, ingredients: "ingredients", recipe: "recipe", filePath: "", s3Key: "empty")
+            mealsContentProvider?.insertMealDDB(mealId: id!, mealName: "new meal", rating: 0, ingredients: ingredientsTextView.text!, recipe: recipeTextView.text!, s3Key: "empty")
             MealViewController.mealId = id
         }
         else{
@@ -95,8 +95,8 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
             let meal_ingredients = self.ingredientsTextView.text
             let meal_recipe = self.recipeTextView.text
             let meal_photo_path = self.filePath
-            mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: self.s3Key)
-            mealsContentProvider?.updateMealDDB(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!)
+            mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: s3Key)
+            mealsContentProvider?.updateMealDDB(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, s3Key: s3Key)
         }
     }
     
@@ -131,7 +131,7 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
                 let meal_recipe = self.recipeTextView.text
                 let meal_photo_path = self.filePath
                 mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: s3Key)
-                mealsContentProvider?.updateMealDDB(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!) // ?
+                mealsContentProvider?.updateMealDDB(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, s3Key: s3Key) // ?
             }
         }
     }
@@ -235,6 +235,7 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
         uploadRequest!.body = absFileURL
         
         myMeal?.s3Key = S3key
+        self.s3Key = S3key
         
         let transferManager = AWSS3TransferManager.default()
         print("Made transfer manager")

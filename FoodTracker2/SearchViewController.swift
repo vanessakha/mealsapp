@@ -10,6 +10,8 @@ import UIKit
 import Foundation
 import AWSDynamoDB
 import AWSCognitoIdentityProvider
+import AWSS3
+import AWSMobileClient
 
 class SearchViewController: UITableViewController {
     
@@ -73,6 +75,47 @@ class SearchViewController: UITableViewController {
         cell.nameLabel.text = meal.mealName
         cell.ratingControl.rating = meal.rating
         
+        if meal.s3Key != "empty"{
+            print("meal s3key isn't empty")
+//            let imageKey = NSUUID().uuidString
+            let downloadingFileURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(meal.s3Key)
+            let downloadRequest = AWSS3TransferManagerDownloadRequest()!
+            downloadRequest.bucket = "mealsapp-userfiles-mobilehub-1459387644/public"
+            downloadRequest.key = meal.s3Key
+            downloadRequest.downloadingFileURL = downloadingFileURL
+            
+//            let credentialsProvider = AWSMobileClient.sharedInstance().getCredentialsProvider()
+//            let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialsProvider)
+//            AWSServiceManager.default().defaultServiceConfiguration = configuration
+            print("about to make transfer manager")
+            let transferManager = AWSS3TransferManager.default()
+            print("made transfer manaager")
+            transferManager.download(downloadRequest).continueWith(executor: AWSExecutor.mainThread(), block: { (task: AWSTask<AnyObject>) -> Any? in
+                print("about to attempt download")
+                if let error = task.error as? NSError {
+                    if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code){
+                        switch code{
+                        case .cancelled, .paused:
+                            break
+                        default:
+                            print("Error downloading: \(String(describing: downloadRequest.key))\nError: \(String(describing:error))")
+                        }
+                    }
+                    else{
+                        print("Error downloading: \(String(describing: downloadRequest.key))\nError: \(String(describing: error))")
+                    }
+                    return nil
+                }
+                print("Download complete for \(String(describing: downloadRequest.key))")
+                cell.cellImageView.image = UIImage(contentsOfFile: downloadingFileURL.path)
+                
+                DispatchQueue.main.async{
+                    self.tableView.reloadData()
+                }
+                
+                return nil
+            })
+        }
         
         return cell
         
@@ -116,10 +159,11 @@ class SearchViewController: UITableViewController {
                         break
                     }
                     let meal = meal as! Meals
-                    print("UserId: \(meal._userId!)\nMealId: \(meal._mealId!)\nName: \(meal._name!)\nRating: \(meal._rating!)\nIngredients \(meal._rating!)\nRecipe: \(meal._recipe!)")
-                    let searchedMeal = SearchedMeal(userId: meal._userId!, mealId: meal._mealId!, mealName: meal._name!, rating: meal._rating! as! Int, ingredients: meal._ingredients!, recipe: meal._recipe!, creationDate: meal._creationDate!, updateDate: meal._updateDate!)
+                    print("UserId: \(meal._userId!)\nMealId: \(meal._mealId!)\nName: \(meal._name!)\nRating: \(meal._rating!)\nIngredients \(meal._rating!)\nRecipe: \(meal._recipe!)\nS3Key: \(meal._s3Key)")
+                    let searchedMeal = SearchedMeal(userId: meal._userId!, mealId: meal._mealId!, mealName: meal._name!, rating: meal._rating! as! Int, ingredients: meal._ingredients!, recipe: meal._recipe!, creationDate: meal._creationDate!, updateDate: meal._updateDate!, s3Key: meal._s3Key ?? "empty")
                     count += 1
                     SearchViewController.searchedMeals.append(searchedMeal)
+                    print("number of searchedMeals entries: \(String(SearchViewController.searchedMeals.count))")
                     DispatchQueue.main.async{
                         self.tableView.reloadData()
                     }
@@ -148,6 +192,5 @@ extension SearchViewController: UISearchResultsUpdating{
     func updateSearchResults(for searchController: UISearchController) {
         SearchViewController.searchedMeals = []
         searchMealsDDB(searchRequest: searchController.searchBar.text!)
-        print("number of searchedMeals entries: \(String(SearchViewController.searchedMeals.count))")
     }
 }
