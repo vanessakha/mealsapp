@@ -25,7 +25,7 @@ public class MealsContentProvider{
     // MARK: NSManagedObjectContext Methods
     
     // creating new meals in NSManagedObjectContext
-    func insert(mealName: String, rating: Int, ingredients: String, recipe: String, filePath: String, s3Key: String) ->  String{
+    func insert(mealName: String, rating: Int, averageRating: Float, numRaters: Int, ingredients: String, recipe: String, filePath: String, s3Key: String) ->  String{
         let context = get_context()
         
         let entity = NSEntityDescription.entity(forEntityName: "Meal", in: context)!
@@ -45,6 +45,15 @@ public class MealsContentProvider{
         meal.setValue(recipe, forKeyPath: "recipe")
         meal.setValue(filePath, forKeyPath: "filePath")
         meal.setValue(s3Key, forKeyPath: "s3Key")
+        meal.setValue(averageRating, forKeyPath: "averageRating")
+        meal.setValue(numRaters, forKeyPath: "numRaters")
+        
+//        print("before creating ratersList in core data")
+        
+//        meal.setValue(ratersList, forKeyPath: "ratersList")
+        
+        
+        print("new meal created in core data")
         print("Set filepath to \(filePath)")
         
         do{
@@ -59,11 +68,11 @@ public class MealsContentProvider{
     }
     
     // updating = creating new object
-    func update(mealId: String, mealName: String, rating: Int, ingredients: String, recipe: String, filePath: String, s3Key: String){
+    func update(mealId: String, mealName: String, rating: Int, averageRating: Float, numRaters: Int, ingredients: String, recipe: String, filePath: String, s3Key: String, ratersList: [String: String]){
         let context = get_context()
-        let entity = NSEntityDescription.entity(forEntityName: "Meal", in: context)!
+        let meal_entity = NSEntityDescription.entity(forEntityName: "Meal", in: context)!
         
-        let meal = NSManagedObject(entity: entity, insertInto: context)
+        let meal = NSManagedObject(entity: meal_entity, insertInto: context)
         meal.setValue(NSDate(), forKeyPath: "updateDate")
         print("Updating meal with mealId in core data: \(mealId).")
         
@@ -74,6 +83,31 @@ public class MealsContentProvider{
         meal.setValue(recipe, forKeyPath: "recipe")
         meal.setValue(filePath, forKeyPath: "filePath")
         meal.setValue(s3Key, forKeyPath: "s3Key")
+        meal.setValue(averageRating, forKeyPath: "averageRating")
+        meal.setValue(numRaters, forKeyPath: "numRaters")
+        print("before mutable set value called.")
+        var raters = meal.mutableSetValue(forKey: "rater")
+        print("after mutable set value called.")
+        let rater_entity = NSEntityDescription.entity(forEntityName: "Rater", in: context)!
+        print("after rater entity created")
+        let meal_rater = NSManagedObject(entity: rater_entity, insertInto: context)
+        print("after meal rater created")
+        
+        // update relationships list
+        for (key, value) in ratersList{
+            if key == "empty"{
+                print("key is empty")
+                continue
+            }
+            print("before setting userId value for rater")
+            meal_rater.setValue(key, forKeyPath: "userId")
+            print("after setting userId value for rater")
+            meal_rater.setValue(value, forKeyPath: "rating")
+            print("after setting rating value for rater")
+            raters.add(meal_rater)
+        }
+
+        
         print("Updated filepath to \(filePath)")
         
         do{
@@ -102,7 +136,9 @@ public class MealsContentProvider{
     // MARK: Database Mutation Functions
     
     // inserting into database
-    func insertMealDDB(mealId: String, mealName: String, rating: Int, ingredients: String, recipe: String, s3Key: String)->String{
+    func insertMealDDB(mealId: String, mealName: String, rating: Int, averageRating: Float, numRaters: Int, ingredients: String, recipe: String, filePath: String, s3Key: String, ratersList: [String:String])->String{
+        
+        var meal_ratersList = ratersList
         let object_mapper = AWSDynamoDBObjectMapper.default()
         let meal: Meals = Meals()
         
@@ -110,11 +146,18 @@ public class MealsContentProvider{
         meal._mealId = mealId
         meal._name = mealName
         meal._rating = rating as NSNumber
+        meal._averageRating = averageRating as NSNumber
+        meal._numRaters = numRaters as NSNumber
         meal._ingredients = ingredients
         meal._recipe = recipe
+        meal._filePath = filePath
         meal._s3Key = s3Key
         meal._creationDate = NSDate().timeIntervalSince1970 as NSNumber
         meal._lowercaseName = mealName.lowercased()
+        if ratersList.isEmpty{
+            meal_ratersList["empty"] = "empty"
+        }
+        meal._ratersList = meal_ratersList
         
         object_mapper.save(meal){ (error: Error?) -> Void in
             if let error = error {
@@ -126,20 +169,28 @@ public class MealsContentProvider{
         return meal._mealId!
     }
     
-    func updateMealDDB(mealId: String, mealName: String, rating: Int, ingredients: String, recipe: String, s3Key: String){
+    func updateMealDDB(userId: String, mealId: String, mealName: String, rating: Int, averageRating: Float, numRaters: Int, ingredients: String, recipe: String, filePath: String, s3Key: String, ratersList: [String: String]){
         
+        var meal_ratersList = ratersList
         let object_mapper = AWSDynamoDBObjectMapper.default()
         
         let meal: Meals = Meals()
-        meal._userId = AWSIdentityManager.default().identityId
+//        meal._userId = AWSIdentityManager.default().identityId
+        meal._userId = userId
         meal._mealId = mealId
-        
         meal._name = mealName
         meal._rating = rating as NSNumber
+        meal._averageRating = averageRating as NSNumber
+        meal._numRaters = numRaters as NSNumber
         meal._lowercaseName = mealName.lowercased()
         meal._ingredients = ingredients
         meal._recipe = recipe
+        meal._filePath = filePath
         meal._s3Key = s3Key
+        if ratersList.isEmpty{
+            meal_ratersList["empty"] = "empty"
+        }
+        meal._ratersList = meal_ratersList
         
 //        if (!mealName.isEmpty){
 //            meal._name = mealName
@@ -194,6 +245,7 @@ public class MealsContentProvider{
     // MARK: Database Query Functions
     
     func getMealsFromDDB(){
+        // query and update local data
         print("getting meals from db")
         let queryExpression = AWSDynamoDBQueryExpression()
         queryExpression.keyConditionExpression = "#userId = :userId"
@@ -214,9 +266,15 @@ public class MealsContentProvider{
                 print("Found [\(output!.items.count)] meals")
                 for meal in output!.items {
                     let meal = meal as? Meals
-                    print("\nMealId: \(meal!._mealId!)\nTitle: \(meal!._name!)\nRating: \(meal!._rating!)\nIngredients: \(meal!._ingredients!)\nRecipe: \(meal!._recipe!)\nLowercased name: \(meal!._lowercaseName!)")
+                    print("\nMealId: \(meal!._mealId!)\nTitle: \(meal!._name!)\nRating: \(meal!._rating!)\nAverage Rating: \(meal!._averageRating!)\nNum Raters: \(meal!._numRaters!)\nIngredients: \(meal!._ingredients!)\nRecipe: \(meal!._recipe!)\nLowercased name: \(meal!._lowercaseName!)\nratersList: \(meal!._ratersList)")
+                    
+                    // update core data
+                    DispatchQueue.main.async{
+                        self.update(mealId: meal!._mealId!, mealName: meal!._name!, rating: meal!._rating! as! Int, averageRating: meal!._averageRating!.floatValue, numRaters: meal!._numRaters! as! Int, ingredients: meal!._ingredients!, recipe: meal!._recipe!, filePath: meal!._filePath ?? "", s3Key: meal!._s3Key ?? "", ratersList: meal!._ratersList!)
+                    }
                 }
                 print("got meals from DDB")
+                
             }
         }
     }

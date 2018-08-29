@@ -13,6 +13,7 @@ import CoreData
 import CoreGraphics
 import AWSS3
 import AWSMobileClient
+import AWSDynamoDB
 
 class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate {
     // MARK: Properties
@@ -23,43 +24,89 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
 //    @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var ingredientsTextView: UITextView!
     @IBOutlet weak var recipeTextView: UITextView!
+    @IBOutlet weak var averageRatingLabel: UILabel!
+    
     var dismissKeyboardTapGesture: UITapGestureRecognizer?
 //    var meal: Meal? //change
     
     var autoSaveTimer: Timer!
     static var mealId: String?
     var meals: [NSManagedObject] = []
-    var filePath: String = ""
+    var filePath: String = "empty"
     var s3Key: String = "empty"
     var is_presenting_picker = false
+    var averageRating: Int?
+    var initialRating: Int?
+    var ratersList = [String: String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print("meal view controller did load")
+//        print("info on myMeal: \(String(myMeal?.value(forKey: "name") as! String))")
         view.isUserInteractionEnabled = true
-        
-        autoSaveTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(autoSave), userInfo: nil, repeats: true)
         
         mealsContentProvider = MealsContentProvider()
         
+//        if MealViewController.mealId != nil {
+//            let queryExpression = AWSDynamoDBQueryExpression()
+//            queryExpression.indexName = "getMeal"
+//            queryExpression.keyConditionExpression = "mealId = :mealId"
+//            queryExpression.expressionAttributeValues = [
+//                ":mealId": MealViewController.mealId
+//            ]
+//
+//            let object_mapper = AWSDynamoDBObjectMapper.default()
+//            object_mapper.query(Meals.self, expression: queryExpression){ (output: AWSDynamoDBPaginatedOutput?, error: Error?) in
+//                print("Querying")
+//                if error != nil {
+//                    print("DynamoDB query request failed. Error \(String(describing: error))")
+//                }
+//                if output != nil{
+//                    print("num of meals with this mealId: \(output!.items.count)")
+//                    let meal = output!.items[0] as! Meals
+//                    self.myMeal!.averageRating = meal._averageRating!.floatValue
+//                    self.myMeal!.numRaters = meal._numRaters!.int32Value
+//                }
+//
+//            }
+//        }
+//        else{
+//            print("Meal id is nil, not querying for meal")
+//        }
         configureView()
+        
+        initialRating = ratingControl.rating
+        
+        autoSaveTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(autoSave), userInfo: nil, repeats: true)
+        
+        
     }
     
     var myMeal: Meal? {
         didSet{
             MealViewController.mealId = myMeal?.value(forKey: "mealId") as? String
-            configureView()
+//            configureView() // ?
             self.filePath = myMeal?.value(forKey: "filePath") as! String
             self.s3Key = myMeal?.value(forKey: "s3Key") as! String
+            var key: String?
+            var value: String?
+            for rater in myMeal!.rater!.allObjects as! [Rater]{
+                key = rater.userId
+                value = rater.rating
+                self.ratersList[key!] = value
+            }
         }
     }
     
     func configureView(){
+//        photoImageView.image = UIImage(named: "defaultPhoto")
         if let meal_name = myMeal?.value(forKey: "name") as? String {
             nameTextField?.text = meal_name
         }
         if let meal_rating = myMeal?.value(forKey: "rating") as? Int {
-            ratingControl?.rating = meal_rating
+            print("meal_rating: \(String(meal_rating))")
+            ratingControl.rating = meal_rating
         }
         if let meal_recipe = myMeal?.value(forKey: "recipe") as? String {
             recipeTextView?.text = meal_recipe
@@ -75,13 +122,16 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
                 }
             }
         }
+        if let meal_averageRating = myMeal?.value(forKey: "averageRating") as? Float{
+            averageRatingLabel.text = "\(String(meal_averageRating)) carrots"
+        }
     }
     
     @objc func autoSave(){
         if (MealViewController.mealId == nil){
-            // new meal
-            let id = mealsContentProvider?.insert(mealName: "new meal", rating: 0, ingredients: "ingredients", recipe: "recipe", filePath: "", s3Key: "empty")
-            mealsContentProvider?.insertMealDDB(mealId: id!, mealName: "new meal", rating: 0, ingredients: ingredientsTextView.text!, recipe: recipeTextView.text!, s3Key: "empty")
+            // first save
+            let id = mealsContentProvider?.insert(mealName: "new meal", rating: 0, averageRating: 0, numRaters: 0, ingredients: "ingredients", recipe: "recipe", filePath: "empty", s3Key: "empty")
+            mealsContentProvider?.insertMealDDB(mealId: id!, mealName: "new meal", rating: 0, averageRating: 0, numRaters: 0, ingredients: ingredientsTextView.text!, recipe: recipeTextView.text!, filePath: "empty", s3Key: "empty", ratersList: self.ratersList)
             MealViewController.mealId = id
         }
         else{
@@ -95,11 +145,36 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
             let meal_ingredients = self.ingredientsTextView.text
             let meal_recipe = self.recipeTextView.text
             let meal_photo_path = self.filePath
-            mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: s3Key)
-            mealsContentProvider?.updateMealDDB(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, s3Key: s3Key)
+            
+            let meal_avrgRating: Float?
+            let meal_numRaters: Int?
+            let meal_ratersList = self.ratersList
+        
+            // don't officialize averageRatings or numRaters until final update
+            // if myMeals was set/ we came from table view cell
+            if let meal = myMeal{
+                let numRaters = meal.value(forKey: "numRaters") as? Int
+                let avrgRating = meal.value(forKey: "averageRating") as? Float
+//                let ratersList = meal.value(forKey: "ratersList") as? [String: String]
+                
+                meal_avrgRating = avrgRating
+                meal_numRaters = numRaters
+            }
+            else{
+                //  myMeal not set yet because we came from add button
+                // set values to zero for now
+                meal_avrgRating = 0
+                meal_numRaters = 0
+            }
+            
+            mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, averageRating: meal_avrgRating!, numRaters: meal_numRaters!,ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: s3Key, ratersList: meal_ratersList)
+            
+            let userId = AWSIdentityManager.default().identityId 
+            
+            mealsContentProvider?.updateMealDDB(userId: userId!, mealId: meal_id!, mealName: meal_name, rating: meal_rating, averageRating: meal_avrgRating!, numRaters: meal_numRaters!, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: s3Key, ratersList: meal_ratersList)
         }
     }
-    
+
     override func viewDidAppear(_ animated: Bool){
         super.viewDidAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(MealViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
@@ -120,7 +195,8 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
             if mealId == nil {
                 print("no meal id")
             }
-            else { // update new meal one last time
+            else { // update the meal one last time, update average rating here
+                
                 let meal_id = MealViewController.mealId
                 var meal_name = self.nameTextField.text!
                 if meal_name.isEmpty{
@@ -130,10 +206,59 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
                 let meal_ingredients = self.ingredientsTextView.text
                 let meal_recipe = self.recipeTextView.text
                 let meal_photo_path = self.filePath
-                mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: s3Key)
-                mealsContentProvider?.updateMealDDB(mealId: meal_id!, mealName: meal_name, rating: meal_rating, ingredients: meal_ingredients!, recipe: meal_recipe!, s3Key: s3Key) // ?
+                let meal_origNumRaters: Int?
+                let meal_originalAverageRating: Float?
+                var meal_ratersList = self.ratersList
+                
+                if let meal = myMeal{
+                    let origNumRaters = meal.value(forKey: "numRaters") as? Int
+                    let originalAverageRating = meal.value(forKey: "averageRating") as? Float
+//                    let origRatersList = meal.value(forKey: "ratersList") as? [String:String]
+                    
+                    meal_origNumRaters = origNumRaters
+                    meal_originalAverageRating = originalAverageRating
+                }
+                else{
+                    meal_origNumRaters = 0
+                    meal_originalAverageRating = 0
+                }
+                
+                let meal_newNumRaters: Int?
+                let meal_averageRating: Float?
+                let userId = AWSIdentityManager.default().identityId
+                if initialRating == 0{
+                    if meal_rating != 0{
+                        // rating changes, numRaters changes, ratersList changes
+                        meal_newNumRaters = meal_origNumRaters! + 1
+                        meal_averageRating = ((meal_originalAverageRating! * Float(meal_origNumRaters!)) + Float(meal_rating)) / Float(meal_newNumRaters!)
+                    
+                        meal_ratersList[userId!] = String(meal_rating)
+                    }
+                    else{
+                        // rating stays the same, numRaters stays the same, ratersList stays the same
+                        meal_newNumRaters = meal_origNumRaters!
+                        meal_averageRating = meal_originalAverageRating!
+                    }
+                }
+                else{
+                    // note: meal_rating will never be 0 if initialRating is not 0 (rating can't change back to 0)
+                    // execute this block if initialRating != 0 (&& meal_rating != 0)
+                    // rating changes, numRaters stays the same
+                    meal_newNumRaters = meal_origNumRaters!
+                    // subtract old rating and add new rating
+                    meal_averageRating = (meal_originalAverageRating! - Float(initialRating!) + Float(meal_rating)) / Float(meal_newNumRaters!)
+                }
+                
+                mealsContentProvider?.update(mealId: meal_id!, mealName: meal_name, rating: meal_rating, averageRating: meal_averageRating!, numRaters: meal_newNumRaters!, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: s3Key, ratersList: meal_ratersList)
+                
+                mealsContentProvider?.updateMealDDB(userId: userId!, mealId: meal_id!, mealName: meal_name, rating: meal_rating, averageRating: meal_averageRating!, numRaters: meal_newNumRaters!, ingredients: meal_ingredients!, recipe: meal_recipe!, filePath: meal_photo_path, s3Key: s3Key, ratersList: meal_ratersList) // ?
             }
         }
+    }
+    
+    func calculateAverageRating()->Int{
+        
+        return 0
     }
     
     override func viewDidDisappear(_ animated: Bool) {

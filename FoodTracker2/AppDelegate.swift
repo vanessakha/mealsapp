@@ -96,12 +96,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
     
     lazy var persistentContainer: NSPersistentContainer = { // make a persistent container
+        objc_sync_enter(self)
         let container = NSPersistentContainer(name: "Meal")
         container.loadPersistentStores(){ (storeDescription, error) in // completion handler
             if let error = error as NSError? {
                 fatalError("Error! \(error), \(error.userInfo)")
             }
         }
+        objc_sync_exit(self)
         return container
     }()
 

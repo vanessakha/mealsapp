@@ -38,6 +38,7 @@ class SearchViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool){
         super.viewWillAppear(animated)
+        
         if #available(iOS 11.0, *){
             navigationItem.hidesSearchBarWhenScrolling = false
         }
@@ -74,7 +75,7 @@ class SearchViewController: UITableViewController {
         let meal = SearchViewController.searchedMeals[indexPath.row]
         cell.nameLabel.text = meal.mealName
         cell.ratingControl.rating = meal.rating
-        
+        cell.cellImageView.image = UIImage(named: "defaultPhoto")
         if meal.s3Key != "empty"{
             print("meal s3key isn't empty")
 //            let imageKey = NSUUID().uuidString
@@ -129,7 +130,8 @@ class SearchViewController: UITableViewController {
         if segue.identifier == "showSearchDetail"{
             let myIndexPath = self.tableView.indexPathForSelectedRow
             let controller = (segue.destination as! UINavigationController).topViewController as! SearchResultsViewController
-            controller.searchedMeal = SearchViewController.searchedMeals[myIndexPath!.row]
+            controller.searchedMeal = SearchViewController.searchedMeals[myIndexPath!.row] // change
+            controller.index = myIndexPath!.row
         }
     }
     
@@ -160,7 +162,7 @@ class SearchViewController: UITableViewController {
                     }
                     let meal = meal as! Meals
                     print("UserId: \(meal._userId!)\nMealId: \(meal._mealId!)\nName: \(meal._name!)\nRating: \(meal._rating!)\nIngredients \(meal._rating!)\nRecipe: \(meal._recipe!)\nS3Key: \(meal._s3Key)")
-                    let searchedMeal = SearchedMeal(userId: meal._userId!, mealId: meal._mealId!, mealName: meal._name!, rating: meal._rating! as! Int, ingredients: meal._ingredients!, recipe: meal._recipe!, creationDate: meal._creationDate!, updateDate: meal._updateDate!, s3Key: meal._s3Key ?? "empty")
+                    let searchedMeal = SearchedMeal(userId: meal._userId!, mealId: meal._mealId!, mealName: meal._name!, rating: meal._rating! as! Int, averageRating: meal._averageRating! as! Float, numRaters: meal._numRaters! as! Int, ingredients: meal._ingredients!, recipe: meal._recipe!, creationDate: meal._creationDate!, updateDate: meal._updateDate!, filePath: meal._filePath ?? "empty", s3Key: meal._s3Key ?? "empty", ratersList: meal._ratersList!)
                     count += 1
                     SearchViewController.searchedMeals.append(searchedMeal)
                     print("number of searchedMeals entries: \(String(SearchViewController.searchedMeals.count))")
