@@ -13,8 +13,8 @@
 		717216C1212396D200ABC7BD /* MealsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717216C0212396D200ABC7BD /* MealsClass.swift */; };
 		717216C32123BA2500ABC7BD /* SearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717216C22123BA2500ABC7BD /* SearchResultsViewController.swift */; };
 		717216D72123BE9300ABC7BD /* SearchViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717216D62123BE9300ABC7BD /* SearchViewCell.swift */; };
-		717B0F4C21084E62002D57A5 /* awsconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = 717B0F4B21084E62002D57A5 /* awsconfiguration.json */; };
 		718CC07D2116B7E80007B744 /* Meal.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 718CC07B2116B7E80007B744 /* Meal.xcdatamodeld */; };
+		71AA7CA7213785E800652805 /* awsconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = 71AA7CA6213785E800652805 /* awsconfiguration.json */; };
 		71AE0ADF2106B0BC003B8161 /* MealsContentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71AE0ADE2106B0BC003B8161 /* MealsContentProvider.swift */; };
 		71BF986121314F8D00307544 /* Meals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BF985F21314F8D00307544 /* Meals.swift */; };
 		71BF986221314F8D00307544 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 71BF986021314F8D00307544 /* LICENSE.txt */; };
@@ -48,8 +48,8 @@
 		717216C0212396D200ABC7BD /* MealsClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealsClass.swift; sourceTree = "<group>"; };
 		717216C22123BA2500ABC7BD /* SearchResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsViewController.swift; sourceTree = "<group>"; };
 		717216D62123BE9300ABC7BD /* SearchViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewCell.swift; sourceTree = "<group>"; };
-		717B0F4B21084E62002D57A5 /* awsconfiguration.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = awsconfiguration.json; sourceTree = "<group>"; };
 		718CC07C2116B7E80007B744 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		71AA7CA6213785E800652805 /* awsconfiguration.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = awsconfiguration.json; sourceTree = "<group>"; };
 		71AE0ADE2106B0BC003B8161 /* MealsContentProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealsContentProvider.swift; sourceTree = "<group>"; };
 		71BF985F21314F8D00307544 /* Meals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Meals.swift; sourceTree = "<group>"; };
 		71BF986021314F8D00307544 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -168,9 +168,9 @@
 				71FB457420EAC4C400811DB5 /* MealTableViewCell.swift */,
 				71FB454F20E7250E00811DB5 /* AppDelegate.swift */,
 				71FB456F20E7611F00811DB5 /* RatingControl.swift */,
-				717B0F4B21084E62002D57A5 /* awsconfiguration.json */,
 				71FB455320E7250E00811DB5 /* Main.storyboard */,
 				71FB455620E7250F00811DB5 /* Assets.xcassets */,
+				71AA7CA6213785E800652805 /* awsconfiguration.json */,
 				71FB455820E7250F00811DB5 /* LaunchScreen.storyboard */,
 				71FB455B20E7250F00811DB5 /* Info.plist */,
 			);
@@ -283,7 +283,7 @@
 			files = (
 				71FB455A20E7250F00811DB5 /* LaunchScreen.storyboard in Resources */,
 				71FB455720E7250F00811DB5 /* Assets.xcassets in Resources */,
-				717B0F4C21084E62002D57A5 /* awsconfiguration.json in Resources */,
+				71AA7CA7213785E800652805 /* awsconfiguration.json in Resources */,
 				71BF986221314F8D00307544 /* LICENSE.txt in Resources */,
 				71FB455520E7250E00811DB5 /* Main.storyboard in Resources */,
 			);

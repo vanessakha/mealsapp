@@ -30,11 +30,11 @@ class SearchResultsViewController: UIViewController {
         mealsContentProvider = MealsContentProvider()
         
         initialRating = ratingView.rating
-//        autoSaveTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(autosave), userInfo: nil, repeats: true)
         
     }
     
     func configureView(){
+        print("average rating while configuring: \(searchedMeal!.averageRating)")
         nameLabel.text = searchedMeal!.mealName
         self.initialRating = 0
         ratingView.rating = 0 // change searchedMeal.rating
@@ -45,7 +45,10 @@ class SearchResultsViewController: UIViewController {
             photoImageView.image = UIImage(contentsOfFile: url.path)
         }
         let userId = AWSIdentityManager.default().identityId
+        print("userId: \(userId)")
         let ratersList = searchedMeal!.ratersList
+        print("got ratersList: \(ratersList)")
+        print("previous rating = \(ratersList[userId!])")
         if let previousRating = ratersList[userId!]{
             if let intRating = Int(previousRating){
                 self.initialRating = intRating
@@ -59,7 +62,8 @@ class SearchResultsViewController: UIViewController {
         else{
             print("Can't find previous rating")
         }
-        averageRatingLabel.text = "\(initialRating!) carrots"
+        
+        averageRatingLabel.text = "\(searchedMeal!.averageRating) carrots"
     }
     
     override func viewWillDisappear(_ animated: Bool){
@@ -74,13 +78,14 @@ class SearchResultsViewController: UIViewController {
         let newAverageRating: Float?
         let new_rating = ratingView.rating
         var ratersList = searchedMeal!.ratersList
+        let raterId = AWSIdentityManager.default().identityId
         
         if initialRating == 0{
             if new_rating != 0{
                 // rating changes, numRaters changes
                 newNumRaters = origNumRaters + 1
                 newAverageRating = ((origAverageRating * Float(origNumRaters)) + Float(currentRating)) / Float(newNumRaters!)
-                ratersList[searchedMeal!.mealId] = String(currentRating)
+                ratersList[raterId!] = String(currentRating)
             }
             else{
                 // nothing changes
@@ -91,8 +96,8 @@ class SearchResultsViewController: UIViewController {
         else{
             // rating changes, numRaters stays same
             newNumRaters = origNumRaters
-            newAverageRating = (origAverageRating - Float(initialRating!) + Float(currentRating)) / Float(newNumRaters!)
-            ratersList[searchedMeal!.mealId] = String(currentRating)
+            newAverageRating = (origAverageRating * Float(newNumRaters!) - Float(initialRating!) + Float(currentRating)) / Float(newNumRaters!)
+            ratersList[raterId!] = String(currentRating)
         }
         
         let userId = searchedMeal!.userId
@@ -108,9 +113,11 @@ class SearchResultsViewController: UIViewController {
         let s3Key = searchedMeal!.s3Key
         let filePath = searchedMeal!.filePath
         
+        print("averageRating before saving: \(searchedMeal!.averageRating)")
         // only update if user hasn't rated meal yet
         mealsContentProvider?.updateMealDDB(userId: userId, mealId: mealId, mealName: mealName, rating: rating, averageRating: averageRating!, numRaters: numRaters!, ingredients: ingredients, recipe: recipe, filePath: filePath, s3Key: s3Key, ratersList: ratersList)
         SearchViewController.searchedMeals[index!] = SearchedMeal(userId: userId, mealId: mealId, mealName: mealName, rating: rating, averageRating: averageRating!, numRaters: numRaters!, ingredients: ingredients, recipe: recipe, creationDate: creationDate, updateDate: updateDate, filePath: filePath, s3Key: s3Key, ratersList: ratersList)
+        print("ratersList saved: \(ratersList)")
     }
     
     override func didReceiveMemoryWarning() {
@@ -121,15 +128,5 @@ class SearchResultsViewController: UIViewController {
     @IBAction func backButtonTapped(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
     }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

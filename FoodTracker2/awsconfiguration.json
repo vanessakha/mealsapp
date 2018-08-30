@@ -14,9 +14,9 @@
   },
   "CognitoUserPool": {
     "Default": {
-      "PoolId": "us-west-2_74y9g4oo3",
-      "AppClientId": "6nphj7a2f97t21goqrmrtjaueo",
-      "AppClientSecret": "fg6h919plqa0krka6ma132d49n8cc6dgeuod8t279ggo1lnbdq9",
+      "PoolId": "us-west-2_bo4E4Xiym",
+      "AppClientId": "15om81s2ip5iqpjbfe69iua135",
+      "AppClientSecret": "jr3iqfvusev558j0vr96enfjq2qhb53p5ehq27i8m64cgu0rung",
       "Region": "us-west-2"
     }
   },

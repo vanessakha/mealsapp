@@ -16,6 +16,7 @@ import AWSMobileClient
 class SearchViewController: UITableViewController {
     
     static var searchedMeals = [SearchedMeal]()
+    var hasValidImage = false
 //    var mealsContentProvider = MealsContentProvider()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,16 +45,6 @@ class SearchViewController: UITableViewController {
         }
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    
     override func viewDidAppear(_ animated: Bool) {
         if #available(iOS 11.0, *){
             self.navigationItem.hidesSearchBarWhenScrolling = true
@@ -74,8 +65,10 @@ class SearchViewController: UITableViewController {
         // configure cell
         let meal = SearchViewController.searchedMeals[indexPath.row]
         cell.nameLabel.text = meal.mealName
-        cell.ratingControl.rating = meal.rating
-        cell.cellImageView.image = UIImage(named: "defaultPhoto")
+        cell.ratingControl.rating = Int(meal.averageRating.rounded())
+        if !hasValidImage{
+            cell.cellImageView.image = UIImage(named: "defaultPhoto")
+        }
         if meal.s3Key != "empty"{
             print("meal s3key isn't empty")
 //            let imageKey = NSUUID().uuidString
@@ -109,7 +102,7 @@ class SearchViewController: UITableViewController {
                 }
                 print("Download complete for \(String(describing: downloadRequest.key))")
                 cell.cellImageView.image = UIImage(contentsOfFile: downloadingFileURL.path)
-                
+                self.hasValidImage = true
                 DispatchQueue.main.async{
                     self.tableView.reloadData()
                 }
@@ -162,7 +155,7 @@ class SearchViewController: UITableViewController {
                     }
                     let meal = meal as! Meals
                     print("UserId: \(meal._userId!)\nMealId: \(meal._mealId!)\nName: \(meal._name!)\nRating: \(meal._rating!)\nIngredients \(meal._rating!)\nRecipe: \(meal._recipe!)\nS3Key: \(meal._s3Key)")
-                    let searchedMeal = SearchedMeal(userId: meal._userId!, mealId: meal._mealId!, mealName: meal._name!, rating: meal._rating! as! Int, averageRating: meal._averageRating! as! Float, numRaters: meal._numRaters! as! Int, ingredients: meal._ingredients!, recipe: meal._recipe!, creationDate: meal._creationDate!, updateDate: meal._updateDate!, filePath: meal._filePath ?? "empty", s3Key: meal._s3Key ?? "empty", ratersList: meal._ratersList!)
+                    let searchedMeal = SearchedMeal(userId: meal._userId!, mealId: meal._mealId!, mealName: meal._name!, rating: meal._rating! as! Int, averageRating: meal._averageRating!.floatValue, numRaters: meal._numRaters! as! Int, ingredients: meal._ingredients!, recipe: meal._recipe!, creationDate: meal._creationDate!, updateDate: meal._updateDate!, filePath: meal._filePath ?? "empty", s3Key: meal._s3Key ?? "empty", ratersList: meal._ratersList!)
                     count += 1
                     SearchViewController.searchedMeals.append(searchedMeal)
                     print("number of searchedMeals entries: \(String(SearchViewController.searchedMeals.count))")

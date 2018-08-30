@@ -42,18 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialsProvider)
         AWSServiceManager.default().defaultServiceConfiguration = configuration
         
-//        let serviceConfiguration = AWSServiceConfiguration(region: .USWest1, credentialsProvider: nil)
-//        let userPoolConfiguration = AWSCognitoIdentityUserPoolConfiguration(clientId: "6nphj7a2f97t21goqrmrtjaueo", clientSecret: "fg6h919plqa0krka6ma132d49n8cc6dgeuod8t279ggo1lnbdq9", poolId: "us-west-2_74y9g4oo3")
-//        AWSCognitoIdentityUserPool.register(with: serviceConfiguration, userPoolConfiguration: userPoolConfiguration, forKey: "UserPool")
-//        let pool = AWSCognitoIdentityUserPool(forKey: "UserPool")
-//        let credentialsProvider = AWSCognitoCredentialsProvider(regionType: .USWest2, identityPoolId: "us-west-2:12a1701a-d229-46f0-87d3-e9b40b93c4df", identityProviderManager: pool)
-        
-//        let credentialsProvider = AWSCognitoCredentialsProvider(regionType: .USWest2, identityPoolId: "us-west-2:12a1701a-d229-46f0-87d3-e9b40b93c4df")
-//        let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialsProvider)
-        
-//        AWSServiceManager.default().defaultServiceConfiguration = configuration
-//        AWSServiceManager.default().defaultServiceConfiguration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialsProvider)
-        
         pinpoint = AWSPinpoint(configuration: AWSPinpointConfiguration.defaultPinpointConfiguration(launchOptions: launchOptions))
         
         return didFinishLaunching
@@ -106,7 +94,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         objc_sync_exit(self)
         return container
     }()
-
 
 }
 
