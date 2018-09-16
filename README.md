@@ -1,7 +1,13 @@
 # Meals iOS App #
 
 ## Description ##
+
 Meals iOS App enables users to keep track of and share any recipes they enjoy, as well as discover new ones through the search feature. 
+
+![Master view](https://i.imgur.com/AY5cOPH.png)
+![Detail view](https://i.imgur.com/927VNqd.png)
+![Search view](https://i.imgur.com/C0ShkTE.png)
+![Detail search view](https://i.imgur.com/I2GTK3M.png)
 
 ## Technology ##
 
