@@ -7,7 +7,7 @@ Meals iOS App enables users to keep track of and share any recipes they enjoy, a
 
  Meals Overview  |   Meal Details  |   Meals Search   |   Meal Search Details 
  :--------------:|:---------------:|:----------------:|:-----------------------:
-![Master view](https://i.imgur.com/AY5cOPH.png){:height="25%" :width="25%"} | ![Detail view](https://i.imgur.com/927VNqd.png){:height="25%" :width="25%"} | ![Search view](https://i.imgur.com/C0ShkTE.png){:height="25%" :width="25%"} | ![Detail search view](https://i.imgur.com/I2GTK3M.png){:height="25%" :width="25%"}
+![Master view](https://i.imgur.com/AY5cOPH.png {:height="25%" :width="25%"}) | ![Detail view](https://i.imgur.com/927VNqd.png {:height="25%" :width="25%"}) | ![Search view](https://i.imgur.com/C0ShkTE.png{:height="25%" :width="25%"}) | ![Detail search view](https://i.imgur.com/I2GTK3M.png{:height="25%" :width="25%"})
 
 ## Technology ##
 
@@ -31,4 +31,9 @@ This app works with the following technology:
 
 + Dependencies: CocoaPods  
 
-*Note: Project is in progress of improvement*
+## Posible Future Developments ##
+
++ Profile (Users table)
++ Commenting
++ Bookmarks
++ S3 Bucket Improvements
